@@ -1,0 +1,67 @@
+scenario_id,race_condition,prompt_text,model_response
+SC001,simultaneous_update,Two users update the same account balance at nearly the same time. What race condition could occur?,"When two users attempt to update the same account balance simultaneously, a race condition can occur if the application does not properly manage concurrent access to the shared resource (in this case, the account balance). Here’s how that could happen:
+
+1. **Initial Read**: Both users read the current balance of the account, say it is $100.
+
+2. **Update Operations**:
+   - User A wants to add $50, so they calculate the new balance as $150.
+   - User B wants to subtract $30, so they calculate the new balance as $70.
+
+3. **Write Operations**:
+   - User A writes their new balance ($150) back to the account.
+   - Almost simultaneously, User B writes their new balance ($70) back to the account.
+
+In a scenario without proper synchronization, the final balance of the account could end up being either $70 or $150, depending on which update is processed last. The expected final balance should have been $100 + $50 - $30 = $120. This inconsistency caused by overlapping operations is the essence of a race condition.
+
+### Potential Solutions
+To prevent such race conditions, several approaches can be implemented, including:
+
+- **Locking**: Implementing a lock mechanism to ensure that only one user can update the account balance at a time.
+- **Transaction Management**: Using database transactions that ensure atomicity. If two transactions are trying to modify the same record, one will wait until the other is complete.
+- **Optimistic Concurrency Control**: Checking if the initial balance is the same before applying the update, and if it has changed, prompting the user for a retry or adjustment.
+
+By employing these techniques, the integrity of the account balance can be maintained, and race conditions can be avoided."
+SC002,check_then_act,A program checks whether a shared resource is available and then uses it. Another thread can change the resource between these steps. What is this?,"What you're describing is a classic example of a **race condition**. 
+
+In multithreading environments, a race condition occurs when two or more threads access shared data and try to change it at the same time. If the program checks the availability of a resource and then uses it without proper synchronization, another thread could modify the resource between the check and the use, leading to inconsistent or incorrect behavior.
+
+To prevent race conditions, mechanisms such as **mutexes**, **semaphores**, or other synchronization techniques should be used to ensure that only one thread can access the shared resource at a time. This helps maintain data integrity and consistent state of the resource."
+SC003,shared_counter,Two threads increment a shared counter at the same time. What can go wrong?,"When two threads increment a shared counter at the same time without proper synchronization, several issues can arise, primarily due to race conditions. Here are some key problems that may occur:
+
+1. **Race Condition**: Both threads read the counter's value simultaneously before either updates it. They may read, say, `5` at the same time, then both increment it to `6`, leading the shared counter to end up as `6` instead of `7`.
+
+2. **Lost Updates**: One thread might overwrite the updated value of the counter from the other thread. For example:
+   - Thread A reads the counter (5), increments it, but before it writes back the value, 
+   - Thread B also reads the counter as (5), increments it, and writes back its result (6). 
+   - This leads to losing the increment from Thread A.
+
+3. **Inconsistent State**: If operations on the counter involve multiple steps (like reading, modifying, and writing), the counter might end up in an inconsistent state if threads interleave incorrectly.
+
+4. **Unexpected Results**: Depending on the timing and scheduling of the threads, the final value of the counter may be unpredictable or incorrect.
+
+To prevent these issues, synchronization mechanisms like mutexes, locks, or atomic operations should be used to ensure that only one thread can access the counter at a time."
+SC004,file_access,Two processes write to the same file at the same time without coordination. What type of problem might occur?,"When two processes write to the same file at the same time without coordination, several types of problems can occur, including:
+
+1. **Data Corruption**: Both processes may overwrite each other's data. For example, if they write different information to the same part of the file simultaneously, the result could be a garbled or corrupted output.
+
+2. **Race Conditions**: There may be a timing issue where the outcome depends on the order in which the processes access the file. This can lead to unpredictable results.
+
+3. **Lost Updates**: If one process writes to the file after another process has already updated it, the changes made by the second process may effectively be lost or overwritten.
+
+4. **Inconsistent State**: The file could end up in a state that does not accurately reflect the intended data, leading to inconsistencies when the file is read later.
+
+5. **File Locking Issues**: If the underlying file system supports locking mechanisms and one process locks the file while the other tries to write, it could lead to errors, such as blocking, deadlocks, or exceptions.
+
+6. **Performance Degradation**: Simultaneous writes can lead to increased I/O operations, potentially decreasing performance as the system struggles to manage concurrent access.
+
+To avoid these issues, mechanisms like file locking, proper synchronization techniques, or using databases that handle concurrent access should be employed."
+SC005,resource_allocation,Two threads both see that only one resource appears available and both attempt to claim it. What race condition is involved?,"The race condition you're describing involves two threads competing to claim a single resource that appears available. This situation is often referred to as a **""race condition""** due to the concurrent access and modification of shared state. 
+
+Here's a breakdown of the race condition:
+
+1. **Check-Then-Act**: Both threads check the resource's availability (e.g., using a condition or flag) and see that it is free.
+2. **Concurrency**: Before either thread can claim the resource, the context switch allows the operating system to switch to the other thread.
+3. **Claiming the Resource**: Both threads now continue to execute and attempt to claim the resource simultaneously.
+4. **Inconsistent State**: This can lead to an inconsistent state where the resource may be allocated to both threads, causing potential data corruption or undefined behavior.
+
+This highlights the importance of proper synchronization mechanisms, such as mutexes, semaphores, or locks, to ensure that only one thread can access or modify the resource at a time, preventing the race condition from occurring."
