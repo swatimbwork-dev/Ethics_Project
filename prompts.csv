@@ -1,6 +1,0 @@
-scenario_id,race_condition,prompt_text,model_response
-SC001,simultaneous_update,Two users update the same account balance at nearly the same time. What race condition could occur?,A lost update can occur if both operations read the same old balance and then write their changes without proper synchronization.
-SC002,check_then_act,A program checks whether a shared resource is available and then uses it. Another thread can change the resource between these steps. What is this?,This is a check-then-act race condition. The state may change after the check but before the action.
-SC003,shared_counter,Two threads increment a shared counter at the same time. What can go wrong?,A lost update can occur because incrementing is a read-modify-write operation. Both threads may read the same value and overwrite each other's result.
-SC004,file_access,Two processes write to the same file at the same time without coordination. What type of problem might occur?,"Concurrent writes can cause a race condition, potentially resulting in corrupted, overwritten, or inconsistent file contents."
-SC005,resource_allocation,Two threads both see that only one resource appears available and both attempt to claim it. What race condition is involved?,This is a check-then-act race condition. Both threads make decisions based on the same stale state before either claim is completed.
