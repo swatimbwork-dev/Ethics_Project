@@ -1,3 +1,11 @@
+# Silent Under-treatment: Does Racial Pain-Treatment Bias Persist in Language Models?
+This project was made for Data 709: Designing Value-Aligned AI: Computational and Ethical Foundations. View our final trasncript of our research here: https://www.overleaf.com/read/kjjyyqwwfnkq#875fcc
+
+## Purpose 
+Due to medical stereotypes, patients who are African American/Black have been subjugated to being severely under treated for pain. With a rise in AI models being used in healthcare spaces, there is a possibility that Large Language Models (LLMs) could continue to perpetuate these harmful assumptions and recommend subpar treatments for Black patients. Hence, we used a GPT-4o-Mini model to generate treatment recommendations for diabetic patients experiencing pain and analyzed the response strengths between African American, Caucasian, male, and female patients. We found differences in treatment recommendations between patients of the same pain level but of different race and/or gender. 
+
+Generally, we found that African American patients tended to have lower response strengths, and that there were larger discrepancies between response strengths for African American and Caucasian males. With our findings, we hope to emphasize the importance of validating and auditing LLMs before being utilized in healthcare fields, ensuring that they are not instigating biases that have continued to exist. All in all, more work needs to be done in the realm of debiasing LLMs for the purposes of healthcare. 
+
 ## Repository Structure
 ```
 Ethics_Project/
@@ -12,9 +20,11 @@ Ethics_Project/
 |   +-- male_50_prompts.csv                            # Randomly selected prompts where gender of patient is male
 |             
 +-- run_audit.ipynb                                    # Prompt GPT-4o-mini for treatment suggestions
-+-- model_responses.csv                                # Saved model responses for each patient
 +-- response_strength.ipynb                            # Evaluate response strength based on a rubric between 0-10 using GPT-4o-mini
-+-- analysis_graphs.ipynb                              # Create graphs based on response strengths     
++-- analysis_graphs.ipynb                              # Create graphs based on response strengths   
++-- validation_template.csv                            # Template of human validation responses required
++-- vallidation_filled.csv                             # 3 human response strength scores
++-- validation_check.ipynb                             # Validate LLM responses with human responses     
 |                    
 +-- results/ 
 |   +-- responses/   
@@ -32,60 +42,64 @@ Ethics_Project/
 |   +-- figures/
 |       +-- race_difference_male_vs_female.png         # Line graph showing difference in race averages for each pain level, both for males and femalse
 |       +-- race_gender_combined_comparison.png        # Show average response strength for each race-gender pair per pain level
-|
-+-- vallidation_filled.csv                             # 3 human response strength scores
-+-- validation_check.ipynb                             # Validate LLM responses with human responses
 |              
 +-- .gitignore
-+-- key.env            
-+-- Project Proposal - Data 709.pdf             
++-- key.env                                            # Place environment variables required for project
 +-- README.md                   
-+-- requirements.txt        
-|
-+-- OpenAIConnect.ipynb
-+-- prompts.csv   
-+-- validation_template.csv      
++-- requirements.txt                                   # Dependencies needed for running .py and .ipynb files
 ```
+
+## Study Pipeline
+Create a virtual environment and installed required dependencies
+```bash
+python -m venv .venv                # Create virtual environment
+.venv/Scripts/Activate.ps1          # Activate virtual environment (on Windows)
+pip install -r requirements.txt     # Install dependencies on requirements.txt file
+```
+
+Place your Azure endpoint and API key in `key.env`. 
+
+Change directory into `data_exp` folder to run `dataexp.ipynb` file. This will get you the diabetic patient dataset, clean it (which can be found in `cleanedData.csv`, and provide other data distribution metrics. 
+```bash
+cd data_exp
+# Then, run all cells in dataexp.ipynb
+```
+In `dataexp.ipynb`, you can also see the Claude AI prompts and responses used for pain level metric. The initial responses for pain levels can be found in `cleanedData_with_pain.csv`. The final output file will be the cleaned data with pain levels along with the prompts which can be found in `final_data_with_prompts.csv`. 
+Change directory out of the `data_exp` folder:
+```bash
+cd ..
+```
+Run cells at `run_aduit.ipynb` to prompt GPT-o4-mini model and recieve responses for treatment recommendations and save the responses at `results/responses` for both male and female patients. Then run cells at `response_strength.ipynb` to generate response strengths from the same model and save them to the `results/scored` directory.
+
+To ensure valid response scores generated by the GPT model, fill out the `validation_template.csv` file yourself with with 3 human responses and save it as `validation_filled.csv`. Then, run `validation_check.ipynb` cells to check Cohen kappa scores between human response scores and LLM response scores. See the rule of thumb at the bottom of the .ipynb file to see agreement strength.
+
+Then, run `analysis_graphs.ipynb` file to generate `reesults/tables` files and figures at `results/figures`.
 
 ## Response Generation and Strength Score Pipeline
 
-1. Selecting the patients and creating the prompts
-I started with Sofia’s final_data_with_prompts.csv. I focused on patients in the [40–50) age group and separated the analysis by gender.
-For each gender, I selected 50 patients total using:
+1. **Selecting the patients and creating the prompts**
+Started with `final_data_with_prompts.csv` and focused on patients in the [40–50) age group, separating the analysis by gender. For each gender, 50 patients were selected total with the following metrics:
 - Pain levels: 0, 2, 4, 6, and 8
 - Race: African American and Caucasian
 - At each pain level: 5 African American + 5 Caucasian patients
-So there are 50 male + 50 female = 100 patients total.
-The selection code is in:
-data_exp/50_male&female_prompts.ipynb
-It generated:
-- data_exp/male_50_prompts.csv
-- data_exp/female_50_prompts.csv
-2. Generating treatment recommendations
-I then used run_audit.ipynb to send the 100 patient prompts to GPT-4o-mini through Azure OpenAI.
-For each prompt, GPT-4o-mini generated a treatment recommendation. The original patient information and prompt are kept together with the model response.
-This generated:
-- results/responses/male_50_responses.csv
-- results/responses/female_50_responses.csv
-The actual treatment recommendation from GPT-4o-mini is stored in the model_response column.
-3. Scoring the treatment recommendation strength
-Next, I used response_strength.ipynb to classify the strength/intensity of each treatment recommendation on a 1–10 scale.
-I used the same GPT-4o-mini deployment with a fixed rubric for this classification. The rubric tells the model to score only the intensity of the treatment recommendation and not to use race, gender, age, stated pain level, response length, or number of recommendations when assigning the score.
-This generated the full scored datasets:
-- results/scored/male_50_scored.csv
-- results/scored/female_50_scored.csv
-These files contain the original prompt, the model’s treatment recommendation, and the final response_strength.
-I also created simplified versions for the final analysis:
-- results/tables/male_50_summary.csv
-- results/tables/female_50_summary.csv
-These only contain:
-race, gender, age, pain level, and response strength.
-4. Comparing race and gender
-Finally, I used analysis_graphs.ipynb to combine the male and female results and calculate the average treatment recommendation strength for each Gender × Race × Pain Level group.
-This generated three analysis tables:
+This gives us 50 male + 50 female = 100 patients total. The selection code is in `data_exp/50_male&female_prompts.ipynb`. The male and female prompts were split between `data_exp/male_50_prompts.csv` and `data_exp/female_50_prompts.csv`.
+
+2. **Generating treatment recommendations**
+Using run_audit.ipynb, the 100 patient prompts were sent to GPT-4o-mini through Azure OpenAI. For each prompt, GPT-4o-mini generated a treatment recommendation. The original patient information and prompt are kept together with the model response, generating `results/responses/male_50_responses.csv` and `results/responses/female_50_responses.csv`. The actual treatment recommendation from GPT-4o-mini is stored in the model_response column.
+
+3. **Scoring the treatment recommendation strength**
+Next, `response_strength.ipynb` is ran to classify the strength/intensity of each treatment recommendation on a 1–10 scale. The same GPT-4o-mini is deployed with a fixed rubric for this classification in which tells the model to score only the intensity of the treatment recommendation and not to use race, gender, age, stated pain level, response length, or number of recommendations when assigning the score. This generates the full scored datasets at `results/scored/male_50_scored.csv` and `results/scored/female_50_scored.csv`. These files contain the original prompt, the model’s treatment recommendation, and the final response_strength. Simplified versions for the final analysis are also at `results/tables/male_50_summary.csv` and `results/tables/female_50_summary.csv`. These only contain race, gender, age, pain level, and response strength.
+
+4. **Comparing race and gender**
+Finally, `analysis_graphs.ipynb` combines the male and female results and calculates the average treatment recommendation strength for each Gender × Race × Pain Level group. This generated three analysis tables:
 - race_gender_average_table.csv — mean response strength, standard deviation, and sample count for each group
 - race_gender_comparison_table.csv — puts the four groups side by side at each pain level
 - race_difference_by_gender.csv — calculates the race difference as Caucasian average − African American average separately for males and females
-I also generated two final figures:
+The two final figures generated are as follows:
 - race_gender_combined_comparison.png — compares average recommendation strength across race and gender at each pain level
 - race_difference_male_vs_female.png — shows the Caucasian − African American difference for males and females across pain levels
+
+## Authors and Contributions
+- [Sofia Azam](https://github.com/srazam) - data preprocessing/exploration/augmentation, README, final transcript
+- [Yanfei Liang](https://github.com/lbldjb2009-code) - model audit including model responses and strength scores, final result figures, README, final transcript
+- [Swati Bhatnagar](https://github.com/smbhatnagar) - model response strength validation, final transcript
