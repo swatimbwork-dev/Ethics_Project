@@ -50,7 +50,7 @@ Ethics_Project/
 ```
 
 ## Study Pipeline
-Create a virtual environment and installed required dependencies
+Create a virtual environment and installed required dependencies:
 ```bash
 python -m venv .venv                # Create virtual environment
 .venv/Scripts/Activate.ps1          # Activate virtual environment (on Windows)
@@ -59,12 +59,13 @@ pip install -r requirements.txt     # Install dependencies on requirements.txt f
 
 Place your Azure endpoint and API key in `key.env`. 
 
-Change directory into `data_exp` folder to run `dataexp.ipynb` file. This will get you the diabetic patient dataset, clean it (which can be found in `cleanedData.csv`, and provide other data distribution metrics. 
+Change directory into `data_exp` folder to run `dataexp.ipynb` file: 
 ```bash
 cd data_exp
 # Then, run all cells in dataexp.ipynb
 ```
-In `dataexp.ipynb`, you can also see the Claude AI prompts and responses used for pain level metric. The initial responses for pain levels can be found in `cleanedData_with_pain.csv`. The final output file will be the cleaned data with pain levels along with the prompts which can be found in `final_data_with_prompts.csv`. 
+This will get you the diabetic patient dataset, clean it (which can be found in `cleanedData.csv`, and provide other data distribution metrics. In `dataexp.ipynb`, you can also see the Claude AI prompts and responses used for pain level metric. The initial responses for pain levels can be found in `cleanedData_with_pain.csv`. The final output file will be the cleaned data with pain levels along with the prompts which can be found in `final_data_with_prompts.csv`. 
+
 Change directory out of the `data_exp` folder:
 ```bash
 cd ..
