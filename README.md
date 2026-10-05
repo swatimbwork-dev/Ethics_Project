@@ -103,4 +103,4 @@ The two final figures generated are as follows:
 ## Authors and Contributions
 - [Sofia Azam](https://github.com/srazam) - data preprocessing/exploration/augmentation, README, final transcript
 - [Yanfei Liang](https://github.com/lbldjb2009-code) - model audit including model responses and strength scores, final result figures, README, final transcript
-- [Swati Bhatnagar](https://github.com/smbhatnagar) - model response strength validation, final transcript
+- [Swati Bhatnagar](https://github.com/smbhatnagar) - project management, model response strength validation, final transcript
